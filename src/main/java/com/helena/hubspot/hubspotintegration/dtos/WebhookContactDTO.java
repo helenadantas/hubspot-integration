@@ -6,7 +6,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WebhookContactDTO {
-    private String event;
-    private String contactId;
-    private String email;
+    private int appId;
+    private int eventId;
+    private int subscriptionId;
+    private int portalId;
+    private long occurredAt;
+    private String subscriptionType;
+    private int attemptNumber;
+    private int objectId;
+    private String changeSource;
+    private String changeFlag;
 }
