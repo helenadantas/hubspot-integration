@@ -2,11 +2,8 @@ package com.helena.hubspot.hubspotintegration.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,22 +12,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.
-                /*authorizeHttpRequests(auth -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/public/**")).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin(Customizer.withDefaults())
-                .logout(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable());*/
-                        csrf().disable()
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/oauth/**").permitAll()
+                .antMatchers("/public/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .oauth2Login();
 
         return http.build();
     }

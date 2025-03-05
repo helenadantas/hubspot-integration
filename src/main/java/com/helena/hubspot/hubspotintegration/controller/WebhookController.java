@@ -13,7 +13,6 @@ public class WebhookController {
 
     @PostMapping("/contact")
     public ResponseEntity<String> receiveContactWebhook(@RequestBody List<WebhookContactDTO> payload) {
-        System.out.println(payload);
         try {
             if (payload == null) {
                 return ResponseEntity.badRequest().body("Payload invalid");
