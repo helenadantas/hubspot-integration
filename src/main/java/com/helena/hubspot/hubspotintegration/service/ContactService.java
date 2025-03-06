@@ -1,5 +1,6 @@
 package com.helena.hubspot.hubspotintegration.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helena.hubspot.hubspotintegration.dtos.CreateContactDTO;
 import org.springframework.http.*;
@@ -40,4 +41,15 @@ public class ContactService {
 
         return response.getBody();
     }
+
+    public String extractExistingContactId(String responseBody) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(responseBody);
+            return jsonNode.has("message") ? jsonNode.get("message").asText().replaceAll("[^0-9]", "") : "Unknown ID";
+        } catch (Exception e) {
+            return "Unknown ID";
+        }
+    }
+
 }

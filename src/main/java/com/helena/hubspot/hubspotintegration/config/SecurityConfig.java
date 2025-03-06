@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(a -> a.disable())
                 .authorizeHttpRequests((auth) -> auth
                         .antMatchers(HttpMethod.GET, "/oauth/**").permitAll()
-                        .antMatchers(HttpMethod.POST, "/webhook/contact").permitAll()
+                        .antMatchers( "/webhook/**").permitAll()
                         .antMatchers("/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
