@@ -4,30 +4,39 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
+
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final HubSpotAuthenticationFilter hubSpotAuthenticationFilter;
+
+    public SecurityConfig(HubSpotAuthenticationFilter hubSpotAuthenticationFilter) {
+        this.hubSpotAuthenticationFilter = hubSpotAuthenticationFilter;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/oauth/**").permitAll()
-                .antMatchers("/public/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .oauth2Login();
+                .csrf(a -> a.disable())
+                .authorizeHttpRequests((auth) -> auth
+                        .antMatchers(HttpMethod.GET, "/oauth/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/webhook/contact").permitAll()
+                        .antMatchers("/public/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(hubSpotAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }
+
